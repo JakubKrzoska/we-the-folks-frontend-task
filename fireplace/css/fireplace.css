@@ -14,6 +14,12 @@ body {
   isolation: isolate;
   cursor: pointer;
   user-select: none;
+  /* Revealed by fireplace.js once the images are decoded and the intro's start state is set. */
+  visibility: hidden;
+}
+
+.ad.is-ready {
+  visibility: visible;
 }
 
 .ad--top {
@@ -52,6 +58,42 @@ body {
   left: 43.5px;
   width: 175px;
   height: 246px;
+}
+
+/* All three zoom around the centre of the whole fireplace, not their own, so the moss stays
+   lined up across the seams. In each part's coordinates that's x = 840 minus its left edge. */
+.bg {
+  will-change: transform;
+}
+
+.ad--left .bg {
+  transform-origin: 840px 487.5px;
+}
+
+.ad--top .bg {
+  transform-origin: 516px 487.5px;
+}
+
+.ad--right .bg {
+  transform-origin: -520px 487.5px;
+}
+
+/* The logo sits inside a full-size layer, so this is the centre of the visible logo. */
+.logo {
+  transform-origin: 160.5px 125px;
+}
+
+/* Each copy of top/hl.png keeps one line. The cuts are in the empty rows between lines. */
+.headline--1 {
+  clip-path: inset(0 0 165px 0);
+}
+
+.headline--2 {
+  clip-path: inset(85px 0 98px 0);
+}
+
+.headline--3 {
+  clip-path: inset(152px 0 0 0);
 }
 
 /* box.png is a blue bar on opaque black, so the clip drops the black. Opacity and saturation
