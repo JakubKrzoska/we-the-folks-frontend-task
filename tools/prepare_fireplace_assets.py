@@ -37,7 +37,7 @@ BAKED_PACKS = {
 
 # Moss to clone over each baked pack: top-left corner in bg-big.jpg, same size as the hole.
 # Chosen by searching the photo for even-toned areas matching the light around each hole.
-CLONE_FROM = {'left': (1440, 560), 'right': (2020, 1160)}
+CLONE_FROM = {'left': (1440, 560), 'right': (1632, 1344)}
 
 # Pack outlines in the pre-cut files, which are the layout's size and position.
 PACKS = {

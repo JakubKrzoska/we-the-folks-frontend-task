@@ -1,0 +1,93 @@
+/* Shared by top.html, left.html and right.html. Sizes are CSS px; the assets are 2x. */
+
+html,
+body {
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+.ad {
+  position: relative;
+  overflow: hidden;
+  /* Keeps the blend modes below inside the ad. */
+  isolation: isolate;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ad--top {
+  width: 1032px;
+  height: 250px;
+}
+
+.ad--left,
+.ad--right {
+  width: 320px;
+  height: 975px;
+}
+
+.ad img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+/* Exported at the size of the whole creative, so the position is baked into the image. */
+.layer {
+  width: 100%;
+  height: 100%;
+}
+
+.ad .product--left {
+  top: 278.5px;
+  left: 55.5px;
+  width: 211px;
+  height: 399px;
+}
+
+.ad .product--right {
+  top: 303.5px;
+  left: 43.5px;
+  width: 175px;
+  height: 246px;
+}
+
+/* box.png is a blue bar on opaque black, so the clip drops the black. Opacity and saturation
+   are fitted to layout.png, whose panel is more muted than the asset. */
+.panel {
+  clip-path: inset(744.5px 0 61px 0);
+  opacity: 0.93;
+  filter: saturate(0.7);
+}
+
+/* hl.png is white copy on opaque black, and screen makes black transparent. */
+.ad .copy {
+  top: -2px;
+  mix-blend-mode: screen;
+}
+
+.ad--right .copy {
+  left: -1px;
+}
+
+/* cta.png has black corners, so the radius trims them. The filter matches layout.png's red. */
+.ad .cta {
+  top: 836.5px;
+  left: 73px;
+  width: 172.5px;
+  height: 46.5px;
+  border-radius: 6px;
+  filter: saturate(0.8) brightness(1.1);
+}
+
+/* ?debug=1: the design on top of the build. Each part sets its own crop of layout.jpg. */
+.debug-layout {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  opacity: 0.5;
+  pointer-events: none;
+  background: url('../debug/layout.jpg') no-repeat;
+}

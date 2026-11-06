@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Fireplace preview</title>
+  <link rel="icon" href="data:,">
+  <style>
+    body {
+      margin: 0;
+      background: #292929;
+    }
+
+    /* 320 + 4 + 1032 + 4 + 320. The 4px gaps match layout.png and the bg slices. */
+    #fireplace {
+      position: relative;
+      width: 1680px;
+      height: 975px;
+      transform-origin: 0 0;
+    }
+
+    iframe {
+      position: absolute;
+      top: 0;
+      border: 0;
+      display: block;
+    }
+
+    #left {
+      left: 0;
+      width: 320px;
+      height: 975px;
+    }
+
+    #top {
+      left: 324px;
+      width: 1032px;
+      height: 250px;
+    }
+
+    #right {
+      left: 1360px;
+      width: 320px;
+      height: 975px;
+    }
+  </style>
+</head>
+<body>
+  <div id="fireplace">
+    <iframe id="left" title="Fireplace left" scrolling="no"></iframe>
+    <iframe id="top" title="Fireplace top" scrolling="no"></iframe>
+    <iframe id="right" title="Fireplace right" scrolling="no"></iframe>
+  </div>
+  <script>
+    const FIREPLACE_WIDTH = 1680;
+    const FIREPLACE_HEIGHT = 975;
+    const fireplace = document.getElementById('fireplace');
+
+    // Shrinks to fit laptop screens. A full-width fireplace needs a 1680px window.
+    function fitToWindow() {
+      const scale = Math.min(1, document.documentElement.clientWidth / FIREPLACE_WIDTH);
+      fireplace.style.transform = `scale(${scale})`;
+      document.body.style.height = `${FIREPLACE_HEIGHT * scale}px`;
+    }
+
+    window.addEventListener('resize', fitToWindow);
+    fitToWindow();
+
+    // Passes the query on, so preview.html?debug=1 turns the overlay on in all three parts.
+    document.querySelectorAll('iframe').forEach((frame) => {
+      frame.src = `${frame.id}.html${location.search}`;
+    });
+  </script>
+</body>
+</html>
