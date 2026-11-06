@@ -57,7 +57,8 @@ const endRun = () => {
   audio.stopMusic();
   if (game.phase === 'failed') audio.play('crash');
   isEndcardPending = true;
-  endcardTimer = setTimeout(showEndcard, TUNING.endcardDelay * 1000);
+  const delay = game.phase === 'won' ? TUNING.winCardDelay : TUNING.failCardDelay;
+  endcardTimer = setTimeout(showEndcard, delay * 1000);
 };
 
 const frame = (now) => {

@@ -101,12 +101,13 @@ export const TUNING = {
   scrollSpeed: 150,
   rampUpTime: 1, // seconds to reach full scroll speed after the first tap
   borderSlideTime: 0.5, // seconds for the top border to slide up
-  brakeDistance: 80, // px before the end of the gut where scrolling slows down
-  minBrakeSpeed: 0.1, // share of full speed kept while braking, so it still arrives
+  brakeDistance: 60, // px before the end of the gut where scrolling slows down
+  minBrakeSpeed: 0.35, // share of full speed kept while braking, so it still arrives
   textureParallax: 0.6, // the texture moves slower than the gut to add depth
   maxTilt: 22, // degrees
   maxFrameTime: 1 / 20, // a slow frame or tab switch never skips further than this
-  endcardDelay: 0.6, // seconds to take in the crash or the finish before the endcard
+  failCardDelay: 0.6, // seconds to see what hit the player before the fail endcard
+  winCardDelay: 0.15, // the slowdown already builds up to the win, so this stays short
 };
 
 // How far the world scrolls before the right end of the gut reaches the screen edge.
