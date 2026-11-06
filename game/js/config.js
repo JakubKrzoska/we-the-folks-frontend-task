@@ -11,8 +11,15 @@ const BORDER_LIGHT = '#ffd9d3';
 
 export const LOGO_BAR_HEIGHT = 58;
 
-// The gut, texture and obstacles are hidden above this line (the navy header).
+// On the start screen the gut, texture and obstacles are hidden above this line.
 export const HEADER_BOTTOM = 168.5;
+
+// When the run starts the top border slides up under the logo bar, which gives the
+// freed header space to the game.
+export const BORDER_SLIDE = HEADER_BOTTOM - LOGO_BAR_HEIGHT;
+
+// border.png holds both bands; everything above this y is the top band.
+export const BORDER_SPLIT = 320;
 
 export const GUT = {
   src: 'assets/01_game/gameplay.png',
@@ -42,9 +49,28 @@ export const OBSTACLES = [
 export const TEXTURE = { src: 'assets/01_game/bg_texture.png', x: -84.5, y: 78.5, width: 360, height: 640 };
 export const BORDER_SRC = 'assets/border.png';
 
-// Colour bands at the left and right stage edges, as [colour, end y]. They continue
-// the border sideways on short viewports, and above and below it on tall ones.
+// Colour bands at the left and right stage edges, as [colour, end y, moves with the
+// top border]. They continue the border sideways on short viewports, and above and
+// below it on tall ones.
 export const BACKDROP = {
-  left: [[WHITE, 58], [NAVY, 168.5], [BORDER_DARK, 181], [BORDER_LIGHT, 223], [NAVY, 574], [BORDER_LIGHT, 615], [BORDER_DARK, 640]],
-  right: [[WHITE, 58], [NAVY, 168.5], [BORDER_DARK, 190.5], [BORDER_LIGHT, 226], [NAVY, 572], [BORDER_LIGHT, 616.5], [BORDER_DARK, 640]],
+  left: [[WHITE, 58], [NAVY, 168.5, true], [BORDER_DARK, 181, true], [BORDER_LIGHT, 223, true], [NAVY, 574], [BORDER_LIGHT, 615], [BORDER_DARK, 640]],
+  right: [[WHITE, 58], [NAVY, 168.5, true], [BORDER_DARK, 190.5, true], [BORDER_LIGHT, 226, true], [NAVY, 572], [BORDER_LIGHT, 616.5], [BORDER_DARK, 640]],
 };
+
+// Feel of the game. Speeds are in stage px per second.
+export const TUNING = {
+  gravity: 1200,
+  jumpVelocity: -340,
+  maxFallSpeed: 560,
+  scrollSpeed: 150,
+  rampUpTime: 1, // seconds to reach full scroll speed after the first tap
+  borderSlideTime: 0.5, // seconds for the top border to slide up
+  brakeDistance: 80, // px before the end of the gut where scrolling slows down
+  minBrakeSpeed: 0.1, // share of full speed kept while braking, so it still arrives
+  textureParallax: 0.6, // the texture moves slower than the gut to add depth
+  maxTilt: 22, // degrees
+  maxFrameTime: 1 / 20, // a slow frame or tab switch never skips further than this
+};
+
+// How far the world scrolls before the right end of the gut reaches the screen edge.
+export const SCROLL_END = GUT.width - STAGE.width - GUT.startOffset;

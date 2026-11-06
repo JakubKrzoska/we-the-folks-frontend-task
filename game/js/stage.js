@@ -1,11 +1,12 @@
 import { BACKDROP, STAGE } from './config.js';
 
 // One half of the backdrop: hard colour bands, positioned to line up with the scaled stage.
-const bandGradient = (bands, top, scale) => {
+const bandGradient = (bands, top, scale, borderSlide) => {
   let start = '0px';
-  const stops = bands.map(([color, endY], index) => {
+  const stops = bands.map(([color, endY, movesWithBorder], index) => {
     const isLast = index === bands.length - 1;
-    const end = isLast ? '100%' : `${top + endY * scale}px`;
+    const y = movesWithBorder ? endY - borderSlide : endY;
+    const end = isLast ? '100%' : `${top + y * scale}px`;
     const stop = `${color} ${start} ${end}`;
     start = end;
     return stop;
@@ -16,25 +17,41 @@ const bandGradient = (bands, top, scale) => {
 // Scales the fixed 360x640 stage to fit the visible viewport without distortion.
 // Spare space around it is filled by the backdrop, so the ad always looks full screen.
 export function initStage({ root, stage }) {
+  let top = 0;
+  let scale = 1;
+  let borderSlide = 0;
+
+  const paintBackdrop = () => {
+    root.style.background = [
+      `${bandGradient(BACKDROP.left, top, scale, borderSlide)} left / 50% 100% no-repeat`,
+      `${bandGradient(BACKDROP.right, top, scale, borderSlide)} right / 50% 100% no-repeat`,
+    ].join(', ');
+  };
+
   const fit = () => {
     // visualViewport follows mobile toolbars; innerHeight can include hidden areas.
     const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
     const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-    const scale = Math.min(viewportWidth / STAGE.width, viewportHeight / STAGE.height);
+    scale = Math.min(viewportWidth / STAGE.width, viewportHeight / STAGE.height);
 
     const left = (viewportWidth - STAGE.width * scale) / 2;
-    const top = (viewportHeight - STAGE.height * scale) / 2;
+    top = (viewportHeight - STAGE.height * scale) / 2;
 
     root.style.height = `${viewportHeight}px`;
-    root.style.background = [
-      `${bandGradient(BACKDROP.left, top, scale)} left / 50% 100% no-repeat`,
-      `${bandGradient(BACKDROP.right, top, scale)} right / 50% 100% no-repeat`,
-    ].join(', ');
     stage.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+    paintBackdrop();
   };
 
   window.addEventListener('resize', fit);
   window.addEventListener('orientationchange', fit);
   window.visualViewport?.addEventListener('resize', fit);
   fit();
+
+  return {
+    setBorderSlide(slide) {
+      if (slide === borderSlide) return;
+      borderSlide = slide;
+      paintBackdrop();
+    },
+  };
 }
