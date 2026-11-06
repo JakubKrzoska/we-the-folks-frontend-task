@@ -1,3 +1,4 @@
+import { createAnimations } from './animations.js';
 import { createAudio } from './audio.js';
 import { TUNING } from './config.js';
 import { createGame } from './game.js';
@@ -12,10 +13,18 @@ const debug = new URLSearchParams(window.location.search).get('debug') === '1';
 const renderer = await createRenderer(byId('game'), { debug });
 const game = createGame();
 const audio = createAudio();
+const animations = createAnimations({
+  gesture: byId('gesture'),
+  headline: byId('headline'),
+  canvas: byId('game'),
+  game,
+  redraw: () => renderer.draw(game),
+});
 renderer.draw(game);
 
 // Shown only once every image is in, so nothing appears half-built.
 byId('stage').classList.add('is-ready');
+animations.playIntro();
 
 const startScreenItems = [byId('headline'), byId('gesture')];
 const endcards = [byId('fail-card'), byId('win-card')];
@@ -30,7 +39,9 @@ let isMuted = false;
 const showEndcard = () => {
   isEndcardPending = false;
   const hasWon = game.phase === 'won';
-  byId(hasWon ? 'win-card' : 'fail-card').classList.add('is-visible');
+  const card = byId(hasWon ? 'win-card' : 'fail-card');
+  card.classList.add('is-visible');
+  animations.playEndcard(card, hasWon);
   stage.setEndcardBackdrop(true);
   byId('stage').classList.add('has-endcard');
 
@@ -68,6 +79,7 @@ const restart = () => {
   clearTimeout(endcardTimer);
   isEndcardPending = false;
   audio.stopAll();
+  animations.clearEndcard();
   game.reset();
   endcards.forEach((card) => card.classList.remove('is-visible'));
   startScreenItems.forEach((item) => item.classList.remove('is-hidden'));
@@ -75,6 +87,7 @@ const restart = () => {
   byId('stage').classList.remove('has-endcard');
   stage.setBorderSlide(game.borderSlide());
   renderer.draw(game);
+  animations.playIntro();
 };
 
 const openLanding = () => {
@@ -87,10 +100,12 @@ const pause = () => {
   cancelAnimationFrame(frameRequest);
   clearTimeout(endcardTimer);
   audio.hold();
+  animations.pause();
 };
 
 // Back again. A run waits for a tap instead of dropping the player straight away.
 const resume = () => {
+  animations.resume();
   if (game.phase === 'playing') {
     isWaitingToResume = true;
     byId('gesture').classList.remove('is-hidden');
@@ -114,6 +129,7 @@ window.addEventListener('pointerdown', (event) => {
   event.preventDefault();
 
   const isFirstTap = game.phase === 'start';
+  if (isFirstTap) animations.stopIntro();
   game.tap();
 
   if (isFirstTap) {
