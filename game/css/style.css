@@ -1,5 +1,6 @@
 :root {
   --navy: #0b1e49;
+  --white: #ffffff;
 }
 
 * {
@@ -76,4 +77,72 @@ body {
 
 .fades.is-hidden {
   opacity: 0;
+}
+
+/* The logo sits above the endcards, so it needs no pointer events either way. */
+.logo {
+  pointer-events: none;
+}
+
+.endcard {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--white) 58px, var(--navy) 58px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
+}
+
+.endcard.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Once a card has faded in, the canvas goes so its colours can't show at the stage's soft edge. */
+#stage.has-endcard #game {
+  visibility: hidden;
+  transition: visibility 0s linear 0.3s;
+}
+
+.endcard-button {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* Hidden briefly so frantic tapping after a crash can't press a button by accident. */
+  visibility: hidden;
+}
+
+.endcard.is-visible .endcard-button {
+  visibility: visible;
+  transition: visibility 0s linear 0.5s;
+}
+
+.endcard-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fail-cta {
+  top: 482.5px;
+  left: 38px;
+  width: 186px;
+  height: 38.5px;
+}
+
+.replay {
+  top: 538.5px;
+  left: 38.75px;
+  width: 185.5px;
+  height: 40.5px;
+}
+
+.win-cta {
+  top: 560px;
+  left: 27px;
+  width: 214px;
+  height: 45.5px;
 }

@@ -1,4 +1,4 @@
-import { BACKDROP, STAGE } from './config.js';
+import { BACKDROP, BACKDROP_ENDCARD, STAGE } from './config.js';
 
 // One half of the backdrop: hard colour bands, positioned to line up with the scaled stage.
 const bandGradient = (bands, top, scale, borderSlide) => {
@@ -20,11 +20,12 @@ export function initStage({ root, stage }) {
   let top = 0;
   let scale = 1;
   let borderSlide = 0;
+  let backdrop = BACKDROP;
 
   const paintBackdrop = () => {
     root.style.background = [
-      `${bandGradient(BACKDROP.left, top, scale, borderSlide)} left / 50% 100% no-repeat`,
-      `${bandGradient(BACKDROP.right, top, scale, borderSlide)} right / 50% 100% no-repeat`,
+      `${bandGradient(backdrop.left, top, scale, borderSlide)} left / 50% 100% no-repeat`,
+      `${bandGradient(backdrop.right, top, scale, borderSlide)} right / 50% 100% no-repeat`,
     ].join(', ');
   };
 
@@ -51,6 +52,10 @@ export function initStage({ root, stage }) {
     setBorderSlide(slide) {
       if (slide === borderSlide) return;
       borderSlide = slide;
+      paintBackdrop();
+    },
+    setEndcardBackdrop(isEndcard) {
+      backdrop = isEndcard ? BACKDROP_ENDCARD : BACKDROP;
       paintBackdrop();
     },
   };

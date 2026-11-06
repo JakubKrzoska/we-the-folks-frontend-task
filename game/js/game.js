@@ -8,14 +8,19 @@ const easeInOutQuad = (progress) =>
 
 // The rules of the game, with no drawing or browser code, so they can be tested alone.
 export function createGame() {
-  const game = {
+  const initialState = () => ({
     phase: 'start', // start -> playing -> won or failed
     scroll: 0,
     playerY: PLAYER.y,
     velocity: 0,
     elapsed: 0,
     hitObstacle: null,
-  };
+  });
+
+  const game = initialState();
+
+  // Every value that changes during a run lives in initialState, so this leaves nothing behind.
+  game.reset = () => Object.assign(game, initialState());
 
   // 0 to 1 over the opening moment of the run.
   const rampUp = () => easeOutQuad(Math.min(game.elapsed / TUNING.rampUpTime, 1));

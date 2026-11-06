@@ -93,7 +93,12 @@ export const TUNING = {
   textureParallax: 0.6, // the texture moves slower than the gut to add depth
   maxTilt: 22, // degrees
   maxFrameTime: 1 / 20, // a slow frame or tab switch never skips further than this
+  endcardDelay: 0.6, // seconds to take in the crash or the finish before the endcard
 };
 
 // How far the world scrolls before the right end of the gut reaches the screen edge.
 export const SCROLL_END = GUT.width - STAGE.width - GUT.startOffset;
+
+// Behind the endcards the header colours continue and everything else is navy.
+const ENDCARD_BANDS = [[WHITE, LOGO_BAR_HEIGHT], [NAVY, STAGE.height]];
+export const BACKDROP_ENDCARD = { left: ENDCARD_BANDS, right: ENDCARD_BANDS };

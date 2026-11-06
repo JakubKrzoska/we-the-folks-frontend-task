@@ -11,12 +11,40 @@
     <div id="root">
       <main id="stage">
         <canvas id="game"></canvas>
-        <img class="layer" src="assets/logo.png" alt="Your logo" />
 
         <section id="start-screen">
           <img id="headline" class="layer fades" src="assets/01_game/tut.png" alt="Bringe Poo durch den Darm ans Ziel." />
           <img id="gesture" class="gesture fades" src="assets/gesture.png" alt="tab to run" />
         </section>
+
+        <section id="fail-card" class="endcard">
+          <img class="layer" src="assets/02_endcard/fail/bubble.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/bac1.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/bac2.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/bac3.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/bac4.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/bac5.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/sad.png" alt="" />
+          <img class="layer" src="assets/02_endcard/fail/hl.png" alt="Poo, das tat weh! Erfahre jetzt, was deinem Darm guttut." />
+          <button class="endcard-button fail-cta js-clickout" type="button">
+            <img src="assets/02_endcard/fail/cta.png" alt="Jetzt informieren!" />
+          </button>
+          <button id="replay" class="endcard-button replay" type="button">
+            <img src="assets/02_endcard/fail/replay.png" alt="Nochmal spielen" />
+          </button>
+        </section>
+
+        <section id="win-card" class="endcard">
+          <img class="layer" src="assets/02_endcard/win/bubble.png" alt="" />
+          <img class="layer" src="assets/02_endcard/win/konfetti.png" alt="" />
+          <img class="layer" src="assets/02_endcard/win/happy.png" alt="" />
+          <img class="layer" src="assets/02_endcard/win/hl.png" alt="Poo, tut das gut! Wenn du weißt, was dein Darm braucht." />
+          <button class="endcard-button win-cta js-clickout" type="button">
+            <img src="assets/02_endcard/win/cta.png" alt="Jetzt mehr erfahren" />
+          </button>
+        </section>
+
+        <img class="layer logo" src="assets/logo.png" alt="Your logo" />
       </main>
     </div>
 
