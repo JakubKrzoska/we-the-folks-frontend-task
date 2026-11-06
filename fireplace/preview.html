@@ -65,8 +65,20 @@
     window.addEventListener('resize', fitToWindow);
     fitToWindow();
 
+    const frames = [...document.querySelectorAll('iframe')];
+    const notReady = new Set(frames.map((frame) => frame.contentWindow));
+
+    // The parts report in when their images are decoded. All three start from one signal.
+    window.addEventListener('message', (event) => {
+      if (event.data !== 'fireplace:ready') return;
+      notReady.delete(event.source);
+      if (notReady.size > 0) return;
+      frames.forEach((frame) => frame.contentWindow.postMessage('fireplace:start', '*'));
+    });
+
     // Passes the query on, so preview.html?debug=1 turns the overlay on in all three parts.
-    document.querySelectorAll('iframe').forEach((frame) => {
+    // Set here, after the listener above, so no ready message can be missed.
+    frames.forEach((frame) => {
       frame.src = `${frame.id}.html${location.search}`;
     });
   </script>

@@ -30,6 +30,10 @@ const INTRO = {
   headline: 2.6,
   cta: 3.9,
 };
+const READY_MESSAGE = 'fireplace:ready';
+const START_MESSAGE = 'fireplace:start';
+const SYNC_TIMEOUT = 2500;
+
 const PRODUCT_SLIDE = { left: -340, right: 340 };
 const PRODUCT_TILT = { left: -8, right: 8 };
 
@@ -61,11 +65,32 @@ function buildIntro() {
   return intro;
 }
 
+// The parts are separate documents, so the host page starts them together: each says when it's
+// ready, and the host answers once all three are. A host may not know this protocol, so a part
+// never waits for longer than SYNC_TIMEOUT, and one running on its own doesn't wait at all.
+function waitForStartSignal() {
+  if (window.parent === window) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    const timeout = setTimeout(resolve, SYNC_TIMEOUT);
+
+    window.addEventListener('message', (event) => {
+      if (event.source !== window.parent || event.data !== START_MESSAGE) return;
+      clearTimeout(timeout);
+      resolve();
+    });
+
+    // The messages hold no private data, and in production the host's origin isn't known here.
+    window.parent.postMessage(READY_MESSAGE, '*');
+  });
+}
+
 async function start() {
   const images = [...ad.querySelectorAll('img')];
   await Promise.all(images.map((image) => image.decode().catch(() => {})));
 
   const intro = buildIntro();
+  await waitForStartSignal();
   ad.classList.add('is-ready');
   intro.play();
 }
