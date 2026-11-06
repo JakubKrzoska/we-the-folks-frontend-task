@@ -4,6 +4,19 @@
 
 export const STAGE = { width: 360, height: 640 };
 
+export const AUDIO = {
+  files: {
+    music: 'assets/audio/music.mp3',
+    crash: 'assets/audio/crash.mp3',
+    fail: 'assets/audio/fail.mp3',
+    applause: 'assets/audio/applause.mp3',
+    cheer: 'assets/audio/cheer.mp3',
+  },
+  musicVolume: 0.30,
+  effectsVolume: 0.30,
+  musicFadeTime: 0.25,
+};
+
 export const NAVY = '#0b1e49';
 export const WHITE = '#ffffff';
 const BORDER_DARK = '#d89c95';
