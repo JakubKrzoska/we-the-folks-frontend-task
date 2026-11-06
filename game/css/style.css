@@ -1,0 +1,71 @@
+:root {
+  --navy: #0b1e49;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--navy);
+}
+
+body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#root {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 360px;
+  height: 640px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  visibility: hidden;
+}
+
+#stage.is-ready {
+  visibility: visible;
+}
+
+#game,
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 360px;
+  height: 640px;
+}
+
+#game {
+  display: block;
+}
+
+#start-screen {
+  position: absolute;
+  inset: 0;
+}
+
+.gesture {
+  position: absolute;
+  top: 452px;
+  left: 147.5px;
+  width: 86.5px;
+  height: 96px;
+}
