@@ -1,3 +1,4 @@
+import { OBSTACLE_CAPSULES, playerCircle } from './collision.js';
 import {
   BORDER_SLIDE,
   BORDER_SPLIT,
@@ -8,6 +9,7 @@ import {
   NAVY,
   OBSTACLES,
   PLAYER,
+  PLAYFIELD,
   STAGE,
   TEXTURE,
   TUNING,
@@ -22,7 +24,7 @@ const loadImage = (src) =>
     image.src = src;
   });
 
-export async function createRenderer(canvas) {
+export async function createRenderer(canvas, { debug = false } = {}) {
   // Assets are 2x, so the backing canvas is twice the stage size.
   const pixelRatio = 2;
   canvas.width = STAGE.width * pixelRatio;
@@ -46,6 +48,39 @@ export async function createRenderer(canvas) {
       sprite.width,
       sprite.height,
     );
+    ctx.restore();
+  };
+
+  // ?debug=1: hitboxes in green (red when hit) and the playfield limits in yellow.
+  const drawDebug = (game) => {
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.lineCap = 'round';
+
+    ctx.strokeStyle = '#ffe600';
+    [PLAYFIELD.top, PLAYFIELD.bottom].forEach((y) => {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(STAGE.width, y);
+      ctx.stroke();
+    });
+
+    OBSTACLE_CAPSULES.forEach(({ obstacle, a, b, radius }) => {
+      ctx.strokeStyle = obstacle === game.hitObstacle ? '#ff1744' : '#00e676';
+      ctx.globalAlpha = 0.45;
+      ctx.lineWidth = radius * 2;
+      ctx.beginPath();
+      ctx.moveTo(a.x - game.scroll, a.y);
+      ctx.lineTo(b.x - game.scroll + 0.01, b.y); // a zero-length line draws nothing
+      ctx.stroke();
+    });
+
+    const circle = playerCircle(game.scroll, game.playerY);
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = game.phase === 'failed' ? '#ff1744' : '#00e676';
+    ctx.beginPath();
+    ctx.arc(PLAYER.x, circle.y, circle.radius, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   };
 
@@ -95,6 +130,8 @@ export async function createRenderer(canvas) {
         STAGE.width,
         STAGE.height - BORDER_SPLIT,
       );
+
+      if (debug) drawDebug(game);
     },
   };
 }

@@ -1,4 +1,5 @@
-import { BORDER_SLIDE, PLAYER, SCROLL_END, TUNING } from './config.js';
+import { findHit, playerCircle } from './collision.js';
+import { BORDER_SLIDE, PLAYER, PLAYFIELD, SCROLL_END, TUNING } from './config.js';
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const easeOutQuad = (progress) => 1 - (1 - progress) ** 2;
@@ -8,25 +9,31 @@ const easeInOutQuad = (progress) =>
 // The rules of the game, with no drawing or browser code, so they can be tested alone.
 export function createGame() {
   const game = {
-    phase: 'start', // start -> playing -> finished
+    phase: 'start', // start -> playing -> won or failed
     scroll: 0,
     playerY: PLAYER.y,
     velocity: 0,
     elapsed: 0,
+    hitObstacle: null,
   };
 
+  // 0 to 1 over the opening moment of the run.
+  const rampUp = () => easeOutQuad(Math.min(game.elapsed / TUNING.rampUpTime, 1));
+
+  const gravity = () =>
+    TUNING.gravity * (TUNING.startGravity + (1 - TUNING.startGravity) * rampUp());
+
   const scrollSpeed = () => {
-    const rampUp = easeOutQuad(Math.min(game.elapsed / TUNING.rampUpTime, 1));
     const brake = clamp(
       (SCROLL_END - game.scroll) / TUNING.brakeDistance,
       TUNING.minBrakeSpeed,
       1,
     );
-    return TUNING.scrollSpeed * rampUp * brake;
+    return TUNING.scrollSpeed * rampUp() * brake;
   };
 
   game.tap = () => {
-    if (game.phase === 'finished') return;
+    if (game.phase !== 'start' && game.phase !== 'playing') return;
     game.phase = 'playing';
     game.velocity = TUNING.jumpVelocity;
   };
@@ -36,11 +43,17 @@ export function createGame() {
     game.elapsed += deltaTime;
 
     // Includes the acceleration term, so the arc is the same at any frame rate.
-    game.playerY += game.velocity * deltaTime + 0.5 * TUNING.gravity * deltaTime ** 2;
-    game.velocity = Math.min(game.velocity + TUNING.gravity * deltaTime, TUNING.maxFallSpeed);
+    const acceleration = gravity();
+    game.playerY += game.velocity * deltaTime + 0.5 * acceleration * deltaTime ** 2;
+    game.velocity = Math.min(game.velocity + acceleration * deltaTime, TUNING.maxFallSpeed);
 
     game.scroll = Math.min(game.scroll + scrollSpeed() * deltaTime, SCROLL_END);
-    if (game.scroll === SCROLL_END) game.phase = 'finished';
+
+    game.hitObstacle = findHit(playerCircle(game.scroll, game.playerY));
+    const leftPlayfield = game.playerY < PLAYFIELD.top || game.playerY > PLAYFIELD.bottom;
+
+    if (game.hitObstacle || leftPlayfield) game.phase = 'failed';
+    else if (game.scroll === SCROLL_END) game.phase = 'won';
   };
 
   game.tilt = () => clamp(game.velocity / TUNING.maxFallSpeed, -1, 1) * TUNING.maxTilt;

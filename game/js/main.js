@@ -7,7 +7,8 @@ const byId = (id) => document.getElementById(id);
 
 const stage = initStage({ root: byId('root'), stage: byId('stage') });
 
-const renderer = await createRenderer(byId('game'));
+const debug = new URLSearchParams(window.location.search).get('debug') === '1';
+const renderer = await createRenderer(byId('game'), { debug });
 const game = createGame();
 renderer.draw(game);
 
