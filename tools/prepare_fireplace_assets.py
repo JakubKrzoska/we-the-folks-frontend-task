@@ -23,6 +23,7 @@ from PIL import Image, ImageDraw
 SOURCE = Path('../variant-b-fireplace/assets')
 OUTPUT = Path('fireplace/assets')
 JPEG_QUALITY = 82
+PRODUCT_WEBP_QUALITY = 90
 
 # Each creative's area in bg-big.jpg.
 CREATIVES = {
@@ -97,7 +98,7 @@ def main():
         pre_cut = Image.open(SOURCE / part / 'bg.jpg').convert('RGBA')
         pre_cut.putalpha(polygon_mask(pre_cut.size, points))
         bounds = pre_cut.getchannel('A').getbbox()
-        pre_cut.crop(bounds).save(OUTPUT / part / 'product.png', optimize=True)
+        pre_cut.crop(bounds).save(OUTPUT / part / 'product.webp', quality=PRODUCT_WEBP_QUALITY, method=6)
         print(part, 'product at', bounds[:2], 'size', (bounds[2] - bounds[0], bounds[3] - bounds[1]))
 
 
