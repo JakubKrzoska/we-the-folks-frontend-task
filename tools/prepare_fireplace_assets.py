@@ -6,7 +6,8 @@ Why this exists:
 - Neither has the product as a separate layer, which the slide-in animation needs.
 
 So the moss comes from bg-big.jpg and the packs come from the pre-cut files:
-1. Slice bg-big.jpg into the three parts (they sit 8px apart at 2x, a 4 CSS px gap).
+1. Slice bg-big.jpg into the three parts (they sit 8px apart at 2x, a 4 CSS px gap),
+   with extra photo on the inner edges for the zoom to reveal.
 2. Hide the baked-in packs by cloning real moss from elsewhere in the same photo.
 3. Cut each pack out of its pre-cut file into a transparent PNG.
 
@@ -23,13 +24,19 @@ SOURCE = Path('../variant-b-fireplace/assets')
 OUTPUT = Path('fireplace/assets')
 JPEG_QUALITY = 82
 
-SLICES = {
+# Each creative's area in bg-big.jpg.
+CREATIVES = {
     'left': (0, 0, 640, 1950),
     'top': (648, 0, 2712, 500),
     'right': (2720, 0, 3360, 1950),
 }
 
-# Outlines of the packs baked into bg-big.jpg, in slice coordinates, slightly generous.
+# Extra pixels past the creative's edge: left, right, bottom. All parts zoom around the centre of
+# the whole fireplace, which pulls their inner edges away from it, so at the intro's 1.08 scale
+# the photo has to carry on behind the crop: 77px sideways and 36px down at 2x, rounded up.
+BLEED = {'left': (0, 80, 0), 'top': (0, 0, 40), 'right': (80, 0, 0)}
+
+# Outlines of the packs baked into bg-big.jpg, relative to the creative, slightly generous.
 BAKED_PACKS = {
     'left': [(104, 618), (250, 568), (424, 548), (548, 1306), (232, 1378), (108, 760)],
     'right': [(80, 590), (340, 590), (340, 574), (488, 574), (488, 1146), (80, 1146)],
@@ -55,7 +62,8 @@ def polygon_mask(size, points, supersample=4):
 
 
 def remove_baked_pack(slice_image, big, part):
-    points = BAKED_PACKS[part]
+    bleed_left = BLEED[part][0]
+    points = [(x + bleed_left, y) for x, y in BAKED_PACKS[part]]
     xs, ys = zip(*points)
     x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
 
@@ -78,8 +86,9 @@ def remove_baked_pack(slice_image, big, part):
 def main():
     big = Image.open(SOURCE / 'bg-big.jpg').convert('RGB')
 
-    for part, box in SLICES.items():
-        moss = big.crop(box)
+    for part, (x0, y0, x1, y1) in CREATIVES.items():
+        left, right, bottom = BLEED[part]
+        moss = big.crop((x0 - left, y0, x1 + right, y1 + bottom))
         if part in BAKED_PACKS:
             moss = remove_baked_pack(moss, big, part)
         moss.save(OUTPUT / part / 'bg.jpg', quality=JPEG_QUALITY, optimize=True, progressive=True)

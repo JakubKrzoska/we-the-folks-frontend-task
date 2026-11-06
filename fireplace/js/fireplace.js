@@ -1,5 +1,8 @@
+const clickTag = window.clickTag || 'https://example.com/landing';
+
 const ad = document.getElementById('ad');
 const part = ad.dataset.part;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Where each part's top-left corner sits in layout.png, and that file's scale.
 // Measured by matching the supplied layers against it.
@@ -30,6 +33,15 @@ const INTRO = {
   headline: 2.6,
   cta: 3.9,
 };
+const INTRO_LENGTH = 4.5;
+
+// After the intro: one slow drift out and back, plus a few CTA pulses. Everything has finished
+// by LOOPS_END, 30 seconds after the start, and both land exactly on the measured layout.
+const LOOPS_END = 30;
+const DRIFT_SCALE = 1.02;
+const DRIFT_LEG = (LOOPS_END - INTRO_LENGTH) / 2;
+const CTA_PULSE = { start: 5.5, scale: 1.04, duration: 0.6, gap: 2.8, count: 6 };
+
 const READY_MESSAGE = 'fireplace:ready';
 const START_MESSAGE = 'fireplace:start';
 const SYNC_TIMEOUT = 2500;
@@ -43,8 +55,17 @@ function buildIntro() {
   const intro = gsap.timeline({ paused: true });
 
   intro
-    .from('.bg', { scale: 1.08, duration: 4.5, ease: 'power2.out' }, INTRO.background)
-    .from('.bg', { opacity: 0, duration: 0.8, ease: 'none' }, INTRO.background);
+    .from('.bg', { scale: 1.08, duration: INTRO_LENGTH, ease: 'power2.out' }, INTRO.background)
+    .from('.bg', { opacity: 0, duration: 0.8, ease: 'none' }, INTRO.background)
+    .to('.bg', {
+      scale: DRIFT_SCALE,
+      duration: DRIFT_LEG,
+      ease: 'sine.inOut',
+      repeat: 1,
+      yoyo: true,
+      // The browser can release the layer's memory once the zoom is over.
+      onComplete: () => gsap.set('.bg', { willChange: 'auto' }),
+    }, INTRO_LENGTH);
 
   if (part === 'top') {
     intro.from('.headline', {
@@ -60,9 +81,18 @@ function buildIntro() {
     }, INTRO.product)
     .from('.panel', { y: 50, autoAlpha: 0, duration: 0.7, ease: 'power2.out' }, INTRO.panel)
     .from('.copy', { y: 16, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, INTRO.copy)
-    .from('.cta', { scale: 0.7, autoAlpha: 0, duration: 0.6, ease: 'back.out(2)' }, INTRO.cta);
+    .from('.cta', { scale: 0.7, autoAlpha: 0, duration: 0.6, ease: 'back.out(2)' }, INTRO.cta)
+    .add(buildCtaPulse(), CTA_PULSE.start);
 
   return intro;
+}
+
+function buildCtaPulse() {
+  const { scale, duration, gap, count } = CTA_PULSE;
+
+  return gsap.timeline({ repeat: count - 1, repeatDelay: gap })
+    .to('.cta', { scale, duration, ease: 'sine.inOut' })
+    .to('.cta', { scale: 1, duration, ease: 'sine.inOut' });
 }
 
 // The parts are separate documents, so the host page starts them together: each says when it's
@@ -86,6 +116,11 @@ function waitForStartSignal() {
 }
 
 async function start() {
+  if (reducedMotion) {
+    ad.classList.add('is-ready');
+    return;
+  }
+
   const images = [...ad.querySelectorAll('img')];
   await Promise.all(images.map((image) => image.decode().catch(() => {})));
 
@@ -95,5 +130,6 @@ async function start() {
   intro.play();
 }
 
+ad.href = clickTag;
 if (new URLSearchParams(location.search).has('debug')) showDebugLayout();
 start();

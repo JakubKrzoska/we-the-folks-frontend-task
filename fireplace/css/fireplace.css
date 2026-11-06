@@ -9,6 +9,7 @@ body {
 
 .ad {
   position: relative;
+  display: block;
   overflow: hidden;
   /* Keeps the blend modes below inside the ad. */
   isolation: isolate;
@@ -20,6 +21,11 @@ body {
 
 .ad.is-ready {
   visibility: visible;
+}
+
+.ad:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
 }
 
 .ad--top {
@@ -61,21 +67,32 @@ body {
 }
 
 /* All three zoom around the centre of the whole fireplace, not their own, so the moss stays
-   lined up across the seams. In each part's coordinates that's x = 840 minus its left edge. */
+   lined up across the seams. That origin is the point (840, 487.5) in fireplace coordinates,
+   rewritten relative to each image's own top-left corner.
+
+   The zoom pulls inner edges away from that point, so each bg.jpg carries on past the edge of
+   its creative: 40px on the sides' inner edges and 20px under the banner. */
 .bg {
   will-change: transform;
 }
 
 .ad--left .bg {
+  width: 360px;
+  height: 975px;
   transform-origin: 840px 487.5px;
 }
 
 .ad--top .bg {
+  width: 1032px;
+  height: 270px;
   transform-origin: 516px 487.5px;
 }
 
 .ad--right .bg {
-  transform-origin: -520px 487.5px;
+  left: -40px;
+  width: 360px;
+  height: 975px;
+  transform-origin: -480px 487.5px;
 }
 
 /* The logo sits inside a full-size layer, so this is the centre of the visible logo. */
