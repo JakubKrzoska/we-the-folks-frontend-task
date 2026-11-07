@@ -5,7 +5,7 @@ Both variants are built:
 - **Variant A, Gut Run:** a mobile tap-to-jump game, in `game/`.
 - **Variant B, Fireplace:** a three-part animated desktop skin, in `fireplace/`.
 
-The reasoning behind the main choices is in [DECISIONS.md](DECISIONS.md).
+The reasoning behind the main choices is in [DECISIONS.md](DECISIONS.md). [demo.mp4](demo.mp4) is a 48-second screen recording of both, with no sound.
 
 ## Run it
 
