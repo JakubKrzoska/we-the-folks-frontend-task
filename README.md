@@ -22,6 +22,8 @@ Then open the address it prints, usually:
 
 It needs a local server, because ES modules and Web Audio don't work from `file://`. There's no build step.
 
+`serve.json` stops `serve` from rewriting the fireplace's `.html` addresses. Those redirects drop the query string, which would switch off `?debug=1` inside the preview's iframes.
+
 To play on a phone, connect it to the same Wi-Fi and open the Network address `npx serve` prints, plus `/game/`.
 
 ### Debug views
@@ -61,28 +63,12 @@ The test scripts were throwaway and aren't in the repository.
 
 ## Known issues and shortcuts
 
-**Assets and design**
-
-- `gesture.png` says "tab to run", while the brief says "tap to run". The text is baked into the asset, so I left it.
-- The top headline asset reads "STARK BEI HUSTENREIZ & HALSSCHMERZEN.", while `layout.png` reads "NATÜRLICH STARK BEI...". I used the asset as supplied, so the banner's text differs from the layout.
-- The moss doesn't match `layout.png` exactly, and there are fewer flowers on the right. This is the cost of a continuous background (see DECISIONS.md).
-- The packs were cut out of the backgrounds, because there was no separate layer. The moss under them is patched, and a very faint soft area remains just above the right pack, visible only when zoomed in.
-- The panel and CTA are slightly off the layout's colours even after a CSS correction.
-- Endcard copy has slightly wider letter-spacing than the designs, because it's baked into the PNGs.
-
-**Behaviour**
-
-- Pausing reacts to tab changes only. A game scrolled out of view keeps running.
-- If a fireplace part loads after the 2.5 second sync timeout, it plays its intro late.
-- Both win sounds play together, and the applause runs for 15 seconds.
-- Replay returns to the start screen instead of restarting the run at once.
-- On very short screens, the stage is scaled to fit and the gut stops at the stage edge.
-
-**Delivery**
-
-- The three creatives share one CSS and one JS file. Real ad delivery would need each packaged separately.
-- Each variant ships its own copy of GSAP, so it can be delivered alone.
-- `tools/prepare_fireplace_assets.py` needs the original assets next to the repository, in `../variant-b-fireplace/`.
+- **Fireplace vs layout:** the moss differs slightly, the cost of a continuous background. The panel and CTA colours are slightly off, and a faint soft area sits above the right pack.
+- **Game endcards:** the copy has slightly wider letter-spacing than the designs, because it's baked into the PNGs.
+- **Pause:** it reacts to tab changes only, so a game scrolled out of view keeps running.
+- **Sync:** a fireplace part that loads after the 2.5 second timeout plays its intro late.
+- **Delivery:** the three creatives share one CSS and JS file, which real ad delivery would package separately.
+- **Asset script:** `tools/prepare_fireplace_assets.py` expects the original assets in `../variant-b-fireplace/`.
 
 ## With more time
 
@@ -94,13 +80,13 @@ The test scripts were throwaway and aren't in the repository.
 
 ## Questions for the team
 
-I worked from these assumptions, and would adjust them if you see it differently:
+I used the assets as supplied and made these assumptions:
 
-1. Is the top headline meant to say "STARK BEI" as in the asset, or "NATÜRLICH STARK BEI" as in the layout?
-2. Can you supply the product as a separate layer? I cut it out of the backgrounds myself.
-3. Does the 3 MB limit apply per variant or to both together? Both options fit, but I treated it as per variant.
-4. Should I keep "tab to run", or is that a typo in the asset?
-5. Should the applause and cheer play together on a win, or is only one intended?
+1. **Headline:** the asset says "STARK BEI", the layout "NATÜRLICH STARK BEI". Which is right?
+2. **Product layer:** there wasn't one, so I cut the packs out of the backgrounds.
+3. **"tab to run":** is this a typo in `gesture.png`?
+4. **Win sounds:** I play the applause and cheer together. Was only one intended?
+5. **3 MB limit:** I treated it as per variant, though both fit together too.
 
 ## How I used AI
 
